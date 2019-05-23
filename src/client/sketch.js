@@ -23,29 +23,49 @@ function draw() {
     background(230);
 
     // noStroke();
-    drawGrid();
 
     text(mouseX + " " + mouseY, mouseX, mouseY);
-    if(foodList.length != 0)
-    {
-        for(let i = 0; i < foodList.length; i++)
-        {
-            drawFood(foodList[i]);
-        }
-    }
+    
 
     if(playerUser != null)
     {
+        drawGrid();
+
+
+        if(userList.length != 0)
+        {
+            for(let i = 0; i < userList.length; i++)
+            {
+                drawPlayer(userList[i]);
+            }
+        }
+
+        if(foodList.length != 0)
+        {
+            for(let i = 0; i < foodList.length; i++)
+            {
+                drawFood(foodList[i]);
+            }
+        }
+
+        if(massFoodList.length != 0)
+        {
+            for(let i = 0; i < massFoodList.length; i++)
+            {
+                drawMass(massFoodList[i]);
+            }
+        }
+
         drawPlayer(playerUser);
+
     }
+
 
     target = {
         x : mouseX - screenX/2,
         y : mouseY - screenY/2
     };
     socket.emit("default", target);
-    // console.log(foodList);
-    // console.log("EE");
 }
 
 function drawFood(food)
@@ -54,26 +74,41 @@ function drawFood(food)
     circle(food.x - playerUser.x + screenX / 2, food.y - playerUser.y + screenY / 2, food.radius * 2);
 }
 
+function drawMass(mass)
+{
+    fill(mass.hue.r, mass.hue.g, mass.hue.b);
+    circle(mass.x - playerUser.x + screenX / 2, mass.y - playerUser.y + screenY / 2, mass.radius * 2);
+}
+
 function drawPlayer(player)
 {
-    // ellipse(player.x - playerUser.x + screenX/2, player.y - playerUser.y + screenY/2, player.mass);
-    
     for(let i = 0; i < player.cells.length; i++)
     {
         fill(player.cells[i].hue.r, player.cells[i].hue.g, player.cells[i].hue.b);
         circle(player.cells[i].x - playerUser.x + screenX / 2, player.cells[i].y - playerUser.y + screenY / 2, player.cells[i].radius * 2);
-        console.log(player.cells[i].radius);
     }
 }
 
 function drawGrid()
 {
     stroke(255);
-    for (var x = 0; x < screenX; x += 10) {
+    for (var x = xOffset - playerUser.x; x < screenX; x += 10) {
         line(x, 0, x, screenY);
     }
 
-    for (var y = 0; y < screenY; y += 10) {
+    for (var y = yOffset - playerUser.y; y < screenY; y += 10) {
         line(0, y, screenX, y);
+    }
+}
+
+function keyPressed()
+{
+    if (key == ' ') 
+    {
+        socket.emit("split");
+    }
+    else if(key == 'w')
+    {
+        socket.emit("fireMass");
     }
 }
