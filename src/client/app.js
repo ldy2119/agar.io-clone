@@ -1,11 +1,10 @@
-let player;
-
 let socket = io();
 
 let foodList = [];
 let userList = [];
 let virusList = [];
 let massFoodList = [];
+let board = [];
 
 let playerUser = null;
 
@@ -14,6 +13,9 @@ let yOffset = 0;
 
 let prevX = 0;
 let prevY = 0;
+
+let mapX = -1;
+let mapY = -1;
 
 let target = null;
 
@@ -35,7 +37,12 @@ function disconnected()
     `;
 }
 
-socket.on("Update", function(visibleFood, u, m, v, uList){
+socket.on("init", function(player){
+    playerUser = player;
+
+});
+
+socket.on("Update", function(visibleFood, u, m, v, uList, leaderboard, X, Y){
     // console.log(visibleFood);
     foodList = visibleFood;
     playerUser = u;
@@ -46,6 +53,17 @@ socket.on("Update", function(visibleFood, u, m, v, uList){
     prevX = u.x;
     prevY = u.y;
     userList = uList;
+    board = leaderboard;
+    if(X != null && Y != null)
+    {
+        mapX = X;
+        mapY = Y;
+    }
+    else
+    {
+        mapX = screenX;
+        mapY = screenY;
+    }
 });
 
 socket.on("ReadyToShow", function(){

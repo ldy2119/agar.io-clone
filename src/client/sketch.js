@@ -2,15 +2,12 @@ let screenX = 640;
 let screenY = 320;
 
 function setup() {
-    createCanvas(100, 100);
     background(0);
     let canvas = createCanvas(screenX, screenY);
     canvas.parent("holder");
 
     //FPS 설정
     frameRate(60);
-    console.log("EE");
-    noLoop();
 }
 
 function draw() {
@@ -28,16 +25,9 @@ function draw() {
         console.log(err);
         return;
     }
-    if(!isPlay)
-    {
+    if(playerUser == null)
         return;
-    }
     background(230);
-
-    // noStroke();
-
-    text(mouseX + " " + mouseY, mouseX, mouseY);
-    
 
     if(playerUser != null)
     {
@@ -79,7 +69,10 @@ function draw() {
 
     }
 
-
+    // console.log(playe)
+    drawLeaderBoard();
+    if(playerUser.type != "player")
+        return;
     target = {
         x : mouseX - screenX/2,
         y : mouseY - screenY/2
@@ -89,8 +82,15 @@ function draw() {
 
 function drawFood(food)
 {
+    
     fill(food.hue.r, food.hue.g, food.hue.b);
+    
+    // let x = food.x * mapX /  - playerUser.x + screenX / 2;
+    // let y = food.y - playerUser.y + screenY / 2;
+
+    // let x = food.x - playerUser.x * mapX / screenX;
     circle(food.x - playerUser.x + screenX / 2, food.y - playerUser.y + screenY / 2, food.radius * 2);
+
 }
 
 function drawMass(mass)
@@ -118,16 +118,17 @@ function drawVirus(virus)
 
 function drawPlayer(player)
 {
-    for(let i = 0; i < player.cells.length; i++)
-    {
-        fill(player.cells[i].hue.r, player.cells[i].hue.g, player.cells[i].hue.b);
-        circle(player.cells[i].x - playerUser.x + screenX / 2, player.cells[i].y - playerUser.y + screenY / 2, player.cells[i].radius * 2);
-        fill(255 - player.cells[i].hue.r, 255 - player.cells[i].hue.g, 255 - player.cells[i].hue.b);
-        textAlign(CENTER);
-        noStroke();
-        text(player.name, player.cells[i].x - playerUser.x + screenX / 2, player.cells[i].y - playerUser.y + screenY / 2);
-        stroke(255);
-    }
+    if(player.cells != null)
+        for(let i = 0; i < player.cells.length; i++)
+        {
+            fill(player.cells[i].hue.r, player.cells[i].hue.g, player.cells[i].hue.b);
+            circle(player.cells[i].x - playerUser.x + screenX / 2, player.cells[i].y - playerUser.y + screenY / 2, player.cells[i].radius * 2);
+            fill(255 - player.cells[i].hue.r, 255 - player.cells[i].hue.g, 255 - player.cells[i].hue.b);
+            textAlign(CENTER);
+            noStroke();
+            text(player.name, player.cells[i].x - playerUser.x + screenX / 2, player.cells[i].y - playerUser.y + screenY / 2);
+            stroke(255);
+        }
 }
 
 function drawGrid()
@@ -140,6 +141,16 @@ function drawGrid()
 
     for (var y = yOffset - playerUser.y; y < screenY; y += 10) {
         line(0, y, screenX, y);
+    }
+}
+
+function drawLeaderBoard()
+{
+    textAlign(LEFT);
+    text("LEADERBOARD", 10, 10);
+    for(let i = 0; i < board.length; i++)
+    {
+        text(board[i].name + " : " + board[i].score, 10, 30 + i * 20);
     }
 }
 
