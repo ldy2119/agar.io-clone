@@ -71,6 +71,8 @@ function draw() {
 
     // console.log(playe)
     drawLeaderBoard();
+    console.log(mapX / screenX, mapY / screenY);
+
     if(playerUser.type != "player")
         return;
     target = {
@@ -85,18 +87,22 @@ function drawFood(food)
     
     fill(food.hue.r, food.hue.g, food.hue.b);
     
-    // let x = food.x * mapX /  - playerUser.x + screenX / 2;
-    // let y = food.y - playerUser.y + screenY / 2;
+    let x = (food.x * screenX / mapX - playerUser.x * screenX / mapX) + screenX / 2;
+    let y = (food.y * screenY / mapY - playerUser.y * screenY / mapY) + screenY / 2;
+    // console.log(x, y);
 
     // let x = food.x - playerUser.x * mapX / screenX;
-    circle(food.x - playerUser.x + screenX / 2, food.y - playerUser.y + screenY / 2, food.radius * 2);
+    circle(x, y, food.radius * 2);
 
 }
 
 function drawMass(mass)
 {
     fill(mass.hue.r, mass.hue.g, mass.hue.b);
-    circle(mass.x - playerUser.x + screenX / 2, mass.y - playerUser.y + screenY / 2, mass.radius * 2);
+    
+    let x = (mass.x * screenX / mapX - playerUser.x * screenX / mapX) + screenX / 2;
+    let y = (mass.y * screenY / mapY - playerUser.y * screenY / mapY) + screenY / 2;
+    circle(x, y, mass.radius * 2);
 }
 
 function drawVirus(virus)
@@ -106,8 +112,9 @@ function drawVirus(virus)
     let halfAngle = angle / 2.0;
     beginShape();
     for (let a = 0; a < TWO_PI; a += angle) {
-        let sx = virus.x - playerUser.x + screenX / 2 + cos(a) * 25;
-        let sy = virus.y - playerUser.y + screenY / 2 + sin(a) * 25;
+        
+        let sx = x + cos(a) * 25;
+        let sy = y + sin(a) * 25;
         vertex(sx, sy);
         sx = virus.x - playerUser.x + screenX / 2 + cos(a + halfAngle) * 20;
         sy = virus.y - playerUser.y + screenY / 2 + sin(a + halfAngle) * 20;
@@ -122,12 +129,17 @@ function drawPlayer(player)
         for(let i = 0; i < player.cells.length; i++)
         {
             fill(player.cells[i].hue.r, player.cells[i].hue.g, player.cells[i].hue.b);
-            circle(player.cells[i].x - playerUser.x + screenX / 2, player.cells[i].y - playerUser.y + screenY / 2, player.cells[i].radius * 2);
+            
+            let x = (player.cells[i].x * screenX / mapX - playerUser.x * screenX / mapX) + screenX / 2;
+            let y = (player.cells[i].y * screenY / mapY - playerUser.y * screenY / mapY) + screenY / 2;
+            circle(x, y, player.cells[i].radius * 2);
             fill(255 - player.cells[i].hue.r, 255 - player.cells[i].hue.g, 255 - player.cells[i].hue.b);
             textAlign(CENTER);
-            noStroke();
-            text(player.name, player.cells[i].x - playerUser.x + screenX / 2, player.cells[i].y - playerUser.y + screenY / 2);
+            stroke(0);
+            strokeWeight(4);
+            text(player.name, x, y);
             stroke(255);
+            strokeWeight(1);
         }
 }
 
@@ -146,6 +158,7 @@ function drawGrid()
 
 function drawLeaderBoard()
 {
+    fill(0, 0, 0);
     textAlign(LEFT);
     text("LEADERBOARD", 10, 10);
     for(let i = 0; i < board.length; i++)
