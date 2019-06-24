@@ -141,6 +141,8 @@ function addPlayer(socket, player, name)
 function playerDied(player)
 {
     player.type = "observer";
+    player.x = mapX / 2;
+    player.y = mapY / 2;
 }
 
 //각 플레이어에게 화면에 표시될 food, cell, virus를 전송한다.
@@ -232,8 +234,6 @@ function sendUpdates()
             }
             else
             {
-                // let index = playerList.indexOf(u);
-                // playerList.splice(index, 1);
                 sockets[u.id].emit("die");
                 playerDied(u);
 
@@ -265,12 +265,6 @@ function sendUpdates()
             visibleVirus = virusList;
             sockets[u.id].emit('Update', visibleFood, u, visibleMass, visibleVirus, visibleCells, leaderboard, mapX, mapY);
         }
-        // if (leaderboardChanged) {
-        //     sockets[u.id].emit('leaderboard', {
-        //         players: users.length,
-        //         leaderboard: leaderboard
-        //     });
-        // }
     });
 }
 
@@ -376,12 +370,8 @@ function movePlayer(player)
                 y: player.y - player.cells[i].y + player.target.y
             };
 
-            // console.log(target.x, player.cells[i].x, player.x, target.y, player.cells[i].y, player.y);
-
             if(player.cells[i].speed > defaultSpeed)
                 player.cells[i].speed -= 0.5;
-
-            let deg = Math.atan2(target.y, target.x);
 
             let slowdown = 1;
             slowdown = Math.log(Math.pow(player.cells[i].mass, 9)) - defaultMassLog + 50;
@@ -397,10 +387,6 @@ function movePlayer(player)
             
             let deltaY = (target.y) / slowdown * player.cells[i].speed;
             let deltaX = (target.x) / slowdown * player.cells[i].speed;
-
-
-            // let deltaY = player.cells[i].speed * Math.sin(deg) / slowdown;
-            // let deltaX = player.cells[i].speed * Math.cos(deg) / slowdown;
 
             if(player.cells[i].x + deltaX >= mapX)
                 player.cells[i].x = mapX;
@@ -421,10 +407,6 @@ function movePlayer(player)
         }
         player.x = x/player.cells.length;
         player.y = y/player.cells.length;
-    }
-    else if(player.type == "observer")  
-    {
-        
     }
 }
 
@@ -511,46 +493,28 @@ function checkcollision(player)
         if(player.splitTime > 0)
             return;
 
-        // let size = player.cells.length;
         let i = 0;
-        // player.cells.sort(function(a, b){
-        //     if(a.self_destroy_index != -1)
-        //         return -1;
-        //     else
-        //         return 1;
-        // });
-        // console.log(player.cells);
         for(let i = player.cells.length - 1; i >= 0; i--)
         {
             if(player.cells[i].self_destroy_index != -1)
             {
+                console.log(player.cells);
+
                 let index = player.cells.findIndex(c => c.count == player.cells[i].self_destroy_index);
 
                 //왜 생기는지 모르겠지만 
                 let childCells = player.cells.filter((cell) => cell.self_destroy_index == player.cells[i].count);
                 for(let j = 0; j < childCells.length; j++)
                 {
-                    player.cells.find((cell) => cell === childCells[j]).self_destroy_index = index;
+                    player.cells.find((cell) => cell === childCells[j]).self_destroy_index = player.cells[i].self_destroy_index;
                 }
 
                 player.cells[index].mass += player.cells[i].mass;
                 player.cells[i] = {};
                 player.cells.splice(i, 1);
+                console.log("====");
             }
         }
-        // player.cells.forEach(function (cell){
-        //     if(cell.self_destroy_index != -1)
-        //     {
-        //         // console.log(cell.count + " -> " + cell.self_destroy_index);
-        //         let index = player.cells.findIndex(c => c.count == cell.self_destroy_index);
-
-        //         let destroyIndex = player.cells.indexOf(cell);
-
-        //         player.cells[index].mass += player.cells[destroyIndex].mass;
-        //         player.cells[destroyIndex] = {};
-        //         player.cells.splice(destroyIndex, 1);
-        //     }
-        // });
     }
 
     function eatMass(m)
@@ -635,12 +599,6 @@ function checkcollision(player)
         }
 
         collisionVirusList.forEach(eatVirus, cell);
-
-
-        // for(let j = 0; j < massFoodList.length; j++)
-        // {
-        //     eatMass(isCollisionMassFoodList[j], j, cell, isCollisionMassFoodList);
-        // }
         cell.radius = massToRadius(cell.mass);
         playerScore += cell.mass;
     });
