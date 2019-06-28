@@ -10,7 +10,7 @@ let foodList = [];
 let virusList = [];
 let sockets = [];
 
-let maxFood = 50;
+let maxFood = 300;
 let maxVirus = 0;
 
 let mapX;
@@ -20,7 +20,7 @@ let V = SAT.Vector;
 let C = SAT.Circle;
 
 let defaultFoodMass = 1;
-let defaultVirusMass = 10;
+let defaultVirusMass = 15;
 let defaultPlayerMass = 3;
 let defaultMassFoodMass = 3;
 let defaultSpeed = 2;
@@ -43,8 +43,8 @@ function massToRadius(mass)
 //서버가 시작될 때 초기값을 설정한다.
 function init()
 {
-    mapX = 600;
-    mapY = 600;
+    mapX = 2560;
+    mapY = 1280;
     for(let i = 0; i < maxFood; i++)
     {
         addFood();
@@ -498,7 +498,6 @@ function checkcollision(player)
         {
             if(player.cells[i].self_destroy_index != -1)
             {
-                console.log(player.cells);
 
                 let index = player.cells.findIndex(c => c.count == player.cells[i].self_destroy_index);
 
@@ -512,7 +511,6 @@ function checkcollision(player)
                 player.cells[index].mass += player.cells[i].mass;
                 player.cells[i] = {};
                 player.cells.splice(i, 1);
-                console.log("====");
             }
         }
     }

@@ -71,7 +71,7 @@ function draw() {
 
     // console.log(playe)
     drawLeaderBoard();
-    console.log(mapX / screenX, mapY / screenY);
+    // console.log(mapX / screenX, mapY / screenY);
 
     if(playerUser.type != "player")
         return;
@@ -113,11 +113,11 @@ function drawVirus(virus)
     beginShape();
     for (let a = 0; a < TWO_PI; a += angle) {
         
-        let sx = x + cos(a) * 25;
-        let sy = y + sin(a) * 25;
+        let sx = virus.x - playerUser.x + screenX / 2 + cos(a) * 2.5 * virus.mass;
+        let sy = virus.y - playerUser.y + screenY / 2 + sin(a) * 2.5 * virus.mass;
         vertex(sx, sy);
-        sx = virus.x - playerUser.x + screenX / 2 + cos(a + halfAngle) * 20;
-        sy = virus.y - playerUser.y + screenY / 2 + sin(a + halfAngle) * 20;
+        sx = virus.x - playerUser.x + screenX / 2 + cos(a + halfAngle) * 2.25 * virus.mass;
+        sy = virus.y - playerUser.y + screenY / 2 + sin(a + halfAngle) * 2.25 * virus.mass;
         vertex(sx, sy);
     }
     endShape(CLOSE);
@@ -132,7 +132,10 @@ function drawPlayer(player)
             
             let x = (player.cells[i].x * screenX / mapX - playerUser.x * screenX / mapX) + screenX / 2;
             let y = (player.cells[i].y * screenY / mapY - playerUser.y * screenY / mapY) + screenY / 2;
-            circle(x, y, player.cells[i].radius * 2);
+            let widthRadius = player.cells[i].radius * 2 * screenX / mapX;
+            let heightRadius = player.cells[i].radius * 2 * screenY / mapY;
+            ellipse(x, y, widthRadius, heightRadius);
+            // circle(x, y, player.cells[i].radius * 2);
             fill(255 - player.cells[i].hue.r, 255 - player.cells[i].hue.g, 255 - player.cells[i].hue.b);
             textAlign(CENTER);
             stroke(0);
